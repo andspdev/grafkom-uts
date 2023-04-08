@@ -42,7 +42,7 @@ public class Main {
 //                0.2f,0.0f,0.0f,0,0.0f));
 
         flappy.add(new Circle(shader, new ArrayList<>(),new Vector4f(1.0f,0.0f,0.0f,1.0f),
-                0.5,0.0f,0.0f,2,0.0f));
+                0.5,0.0f,0.0f,0,0.0f));
 
 
     }

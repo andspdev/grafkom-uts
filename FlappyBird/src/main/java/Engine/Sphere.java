@@ -3,19 +3,23 @@ package Engine;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
 
 public class Sphere extends CircleNew{
+    File tes = new File("Vertices");
     int sectorCount;
     int stackCount;
     Float radiusZ;
     public Sphere(List<ShaderModuleData> shaderModuleDataList,
                   List<Vector3f> vertices, Vector4f color,
                   List<Float> centerPoint, Float radiusX,Float radiusY
-            ,Float radiusZ, int sectorCount,int stackCount,int pilih) {
+            ,Float radiusZ, int sectorCount,int stackCount,int pilih) throws IOException {
         super(shaderModuleDataList, vertices, color, centerPoint, radiusX,radiusY);
         this.sectorCount = sectorCount;
         this.stackCount = stackCount;
@@ -44,7 +48,7 @@ public class Sphere extends CircleNew{
         setupVAOVBO();
     }
 
-    public void Ellipsoid(){
+    public void Ellipsoid() throws IOException {
 
         vertices.clear();
 
@@ -59,6 +63,12 @@ public class Sphere extends CircleNew{
             }
         }
         vertices=temp;
+        try {
+            FileWriter writer = new FileWriter("Vertices");
+            writer.write(String.valueOf(vertices));
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
 
 
     }
