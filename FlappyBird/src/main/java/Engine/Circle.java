@@ -43,14 +43,17 @@ public class Circle extends Object2d {
     {
         //clear vertices
         vertices.clear();
+        x = -0.5f;
 
-        for (float j = -0.5f; j < 1.0f; j+= 0.001) {
-            for (float i = 0; i < 360; i += 0.01) {
-                x = cx + ((r - 0.03) * Math.cos(Math.toRadians(i)));
-                y = cy + ((r) * Math.sin(Math.toRadians(i)));
-                vertices.add(new Vector3f((float) x, (float) y, j));
-            }
+
+        for (float i = 0; i < 360; i += 0.001) {
+
+            x = cx + ((r - 0.03) * Math.cos(Math.toRadians(i)));
+            y = cy + ((r) * Math.sin(Math.toRadians(i)));
+            vertices.add(new Vector3f((float) x, (float) y, -0.5f));
+            vertices.add(new Vector3f((float)x, (float)y, 0.5f));
         }
+
     }
 
     public void createCirclePlat()
