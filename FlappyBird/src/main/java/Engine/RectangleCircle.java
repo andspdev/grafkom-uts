@@ -30,9 +30,9 @@ public class RectangleCircle extends Object2d{
     }
 
     @Override
-    public void draw()
+    public void draw(Camera camera, Projection projection)
     {
-        drawSetup();
+        drawSetup(camera, projection);
         glLineWidth(10);
         glPointSize(10);
         glDrawArrays(GL_POLYGON, 0, vertices.size());

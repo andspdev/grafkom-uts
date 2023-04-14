@@ -76,11 +76,11 @@ public class CircleNew extends Object2d {
         }
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawArrays(GL_TRIANGLE_FAN,0,vertices.size());
+        glDrawArrays(GL_POLYGON,0,vertices.size());
 
         //GL_LINES
         //GL_LINE_STRIP

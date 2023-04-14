@@ -3,6 +3,9 @@ package Engine;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.io.File;
+import java.io.FileWriter;
+import java.io.IOException;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
@@ -10,6 +13,7 @@ import static org.lwjgl.opengl.GL15.*;
 
 public class Circle extends Object2d {
 
+    File VerticeCircle = new File("src/VerticesCircle.txt");
     double r,cx,cy;
     double x,y,offset;
     int pick;
@@ -46,13 +50,15 @@ public class Circle extends Object2d {
         x = -0.5f;
 
 
-        for (float i = 0; i < 360; i += 0.001) {
+        for (float i = 0; i < 360; i += 0.01) {
 
             x = cx + ((r - 0.03) * Math.cos(Math.toRadians(i)));
             y = cy + ((r) * Math.sin(Math.toRadians(i)));
-            vertices.add(new Vector3f((float) x, (float) y, -0.5f));
-            vertices.add(new Vector3f((float)x, (float)y, 0.5f));
+            vertices.add(new Vector3f((float)x, (float)y, 0));
         }
+
+
+
 
     }
 
@@ -84,8 +90,8 @@ public class Circle extends Object2d {
 
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glDrawArrays(GL_TRIANGLE_FAN,0,vertices.size());

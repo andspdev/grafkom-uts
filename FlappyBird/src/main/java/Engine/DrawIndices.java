@@ -31,8 +31,8 @@ public class DrawIndices extends Object2d {
     }
 
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
         System.out.println("Sini");
 
         glLineWidth(1);

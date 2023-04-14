@@ -233,8 +233,8 @@ public class Sphere3D extends CircleNew{
         vertices.add(tempVertices.get(6));
         vertices.add(tempVertices.get(7));
     }
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
         // Draw the vertices
         glLineWidth(1);
         glPointSize(0);

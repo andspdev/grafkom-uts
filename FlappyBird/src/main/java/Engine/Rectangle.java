@@ -20,8 +20,8 @@ public class Rectangle extends Object2d{
                 Utils.listoInt(index),GL_STATIC_DRAW);
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
         glDrawElements(GL_TRIANGLE_FAN, index.size(),GL_UNSIGNED_INT, 0);

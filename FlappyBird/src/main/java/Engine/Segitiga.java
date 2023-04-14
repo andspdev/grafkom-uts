@@ -35,8 +35,8 @@ public class Segitiga extends Object2d{
 
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
         glDrawArrays(GL_TRIANGLE_FAN,0,vertices.size());
     }

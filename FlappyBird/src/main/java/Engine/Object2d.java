@@ -32,6 +32,7 @@ public class Object2d extends ShaderProgram{
 
 
 
+
     public Object2d(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, Vector4f color){
         super(shaderModuleDataList);
         this.vertices = vertices;
@@ -39,6 +40,8 @@ public class Object2d extends ShaderProgram{
         uniformsMap = new UniformsMap(getProgramId());
         uniformsMap.createUniform("uni_color");
         uniformsMap.createUniform("model");
+        uniformsMap.createUniform("projection");
+        uniformsMap.createUniform("view");
         this.color = color;
         model = new Matrix4f().identity();
         childObject =  new ArrayList<>();
@@ -92,12 +95,14 @@ public class Object2d extends ShaderProgram{
 
     }
 
-    public void drawSetup(){
+    public void drawSetup(Camera camera, Projection projection){
         bind();
 
         uniformsMap.setUniform("uni_color",color);
         uniformsMap.setUniform(
                 "model", model);
+        uniformsMap.setUniform("view", camera.getViewMatrix());
+        uniformsMap.setUniform("projection", projection.getProjMatrix());
         glEnableVertexAttribArray(0);
         glBindBuffer(GL_ARRAY_BUFFER,vbo);
         glVertexAttribPointer(0, 3, GL_FLOAT, false,0,0);
@@ -118,10 +123,10 @@ public class Object2d extends ShaderProgram{
 
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
-        glLineWidth(10);
+        glLineWidth(2);
         glPointSize(10);
 
         //GL_LINES
@@ -132,15 +137,15 @@ public class Object2d extends ShaderProgram{
         //GL_POINT
         System.out.println(childObject.size());
 
-        glDrawArrays(GL_LINES,0,vertices.size());
+    glDrawArrays(GL_POLYGON,0,vertices.size());
         for (Object2d child:childObject){
             System.out.println("Kepanggil");
-            child.draw();
+            child.draw(camera, projection);
         }
     }
 
-    public void drawLine(){
-        drawSetup();
+    public void drawLine(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
         glLineWidth(3);
         glPointSize(3);
@@ -198,8 +203,8 @@ public class Object2d extends ShaderProgram{
         return index;
 
     }
-    public void drawLineBerzier(){
-        drawSetup();
+    public void drawLineBerzier(Camera camera, Projection projection){
+        drawSetup(camera, projection);
         // draw the vertices
         glLineWidth(5); // ketebalan garis
         glPointSize(1); // besar kecil vertex

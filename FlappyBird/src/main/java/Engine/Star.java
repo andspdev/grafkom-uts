@@ -40,8 +40,8 @@ public class Star extends Object2d{
         }
     }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
         glLineWidth(1);
         glPointSize(1);

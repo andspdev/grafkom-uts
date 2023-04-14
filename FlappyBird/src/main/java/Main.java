@@ -20,10 +20,14 @@ public class Main {
 
     private Window window = new Window(800,600,"Hello World");
     private ArrayList<Object2d> flappy = new ArrayList<>();
+    Projection projection = new Projection(window.getWidth(),window.getHeight());
+    Camera camera = new Camera();
+
 
     public void init(){
         window.init();
         GL.createCapabilities();
+        camera.setPosition(0,0,2.0f);
 
         List<ShaderProgram.ShaderModuleData> shader = Arrays.asList(
                 //shaderFile lokasi menyesuaikan objectnya
@@ -35,15 +39,60 @@ public class Main {
                                 , GL_FRAGMENT_SHADER)
         );
 
-//        flappy.add(new Sphere(shader,new ArrayList<>(),
-//                new Vector4f((1f),(226f/255f),(74f/255f),1.0f),
-//                new ArrayList<Float>(List.of(0.0f,0.0f,0.0f)),0.5f,0.5f,0.3f,100,50,0));
-//        flappy.get(0).getChildObject().add(new Circle(shader,new ArrayList<>(), new Vector4f(1.0f,0.0f,0.0f,1.0f),
-//                0.2f,0.0f,0.0f,0,0.0f));
 
-        flappy.add(new Circle(shader, new ArrayList<>(),new Vector4f(1.0f,0.0f,0.0f,1.0f),
-                0.5,0.0f,0.0f,0,0.0f));
-        flappy.get(0).rotateObject(0.5f,1.0f,0.0f,0.0f);
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.35f,6));
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,1.0f,1.0f,1.0f),
+                new ArrayList<>(List.of(0.0f,0.15f,0.17f)), 0.37f,0.27f,0.01f,6));
+
+        // CD Input Spaces
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
+                new ArrayList<>(List.of(-0.09f,-0.03f,0.17f)), 0.22f,0.03f,0.01f,6));
+
+        // Tombol bulat
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
+                new ArrayList<>(List.of(0.13f,-0.03f,0.19f)), 0.02f,0.02f,0.02f,7));
+
+
+
+        // Tanda tambah
+            //Vertical
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,6));
+        flappy.get(4).translateObject(-0.12f,-0.16f,0.17f);
+            //Horizontal
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,6));
+        flappy.get(5).rotateObject((float)Math.toRadians(90),0.0f,0.0f,1.0f);
+        flappy.get(5).translateObject(-0.12f,-0.16f,0.17f);
+
+        // Tombol Segitiga
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,0f,1.0f),
+                new ArrayList<>(List.of(0.065f,-0.16f,0.17f)), 0.06f,0.05f,0.03f,8));
+
+
+        // Tombol bulat
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
+                new ArrayList<>(List.of(0.13f,-0.203f,0.17f)), 0.02f,0.02f,0.02f,7));
+
+        // Tombol bulat Merah
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0.0f,0.0f,1.0f),
+                new ArrayList<>(List.of(0.055f,-0.245f,0.17f)), 0.035f,0.035f,0.02f,7));
+
+        // Tombol bulat (Kotak?)
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
+                new ArrayList<>(List.of(-0.158f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,6));
+
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
+                new ArrayList<>(List.of(-0.09f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,6));
+
+
+//        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0.0f,0.0f,1.0f),
+//                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.1f,0.1f,0.1f,9));
+
+
+
+
 
 
     }
@@ -57,7 +106,7 @@ public class Main {
             input();
 
             for(Object2d object: flappy){
-                object.draw();
+                object.draw(camera, projection);
             }
 
 
@@ -82,16 +131,111 @@ public class Main {
                         ("resources/shaders/scene.frag"
                                 , GL_FRAGMENT_SHADER)
         );
-        if(window.isKeyPressed(GLFW_KEY_W)){
-            flappy.get(0).rotateObject(0.1f,0f,1.0f,0f);
-        }
-        if(window.isKeyPressed(GLFW_KEY_S)){
-            flappy.get(0).rotateObject(0.1f,1.0f,0.0f,0.0f);
-        }
-        if(window.isKeyPressed(GLFW_KEY_A)){
-            flappy.get(0).rotateObject(0.1f,0.0f,0.0f,1.0f);
+        if(window.isKeyPressed(GLFW_KEY_Q))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(0.01f, 0f, 0f, 1f);
+            }
         }
 
+        if(window.isKeyPressed(GLFW_KEY_E))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(-0.01f, 0f, 0f, 1f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_W))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(0.01f, 1f, 0f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_S))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(-0.01f, 1f, 0f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_A))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(0.01f, 0f, 1f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_D))
+        {
+            for (Object2d i: flappy)
+            {
+                i.rotateObject(-0.01f, 0f, 1f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_U))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(0f, 0f, 0.01f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_O))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(0f, 0f, -0.01f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_I))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(0f, 0.01f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_K))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(0f, -0.01f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_J))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(-0.01f, 0f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_L))
+        {
+            for (Object2d i: flappy)
+            {
+                i.translateObject(0.01f, 0f, 0f);
+            }
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_LEFT_SHIFT))
+        {
+            camera.moveForward(0.02f);
+        }
+
+        if(window.isKeyPressed(GLFW_KEY_LEFT_CONTROL))
+        {
+            camera.moveBackwards(0.02f);
+        }
 
         if(window.getMouseInput().isLeftButtonPressed()){
             Vector2f pos = window.getMouseInput().getCurrentPos();

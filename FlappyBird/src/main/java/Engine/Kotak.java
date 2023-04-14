@@ -64,8 +64,8 @@ public class Kotak extends Object2d{
 
         }
 
-    public void draw(){
-        drawSetup();
+    public void draw(Camera camera, Projection projection){
+        drawSetup(camera, projection);
 
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
 //        glDrawElements(GL_TRIANGLE_FAN, index.size(),GL_UNSIGNED_INT, 0);
