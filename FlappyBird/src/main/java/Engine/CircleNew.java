@@ -3,10 +3,10 @@ package Engine;
 import org.joml.Vector3f;
 import org.joml.Vector4f;
 
+import java.util.ArrayList;
 import java.util.List;
 
 import static org.lwjgl.opengl.GL11.*;
-import static org.lwjgl.opengl.GL15.*;
 
 public class CircleNew extends Object2d {
 
@@ -61,6 +61,7 @@ public class CircleNew extends Object2d {
             vertices.add(new Vector3f((float) x, (float) y, 0.0f));
 
         }
+
     }
     public void createElipse()
     {

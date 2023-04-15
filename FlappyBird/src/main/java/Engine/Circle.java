@@ -47,12 +47,12 @@ public class Circle extends Object2d {
     {
         //clear vertices
         vertices.clear();
-        x = -0.5f;
+//        x = -0.5f;
 
 
-        for (float i = 0; i < 360; i += 0.01) {
+        for (float i = 180; i >= 90; i = i - 0.01f) {
 
-            x = cx + ((r - 0.03) * Math.cos(Math.toRadians(i)));
+            x = cx + ((r)  * Math.cos(Math.toRadians(i)));
             y = cy + ((r) * Math.sin(Math.toRadians(i)));
             vertices.add(new Vector3f((float)x, (float)y, 0));
         }
@@ -94,7 +94,7 @@ public class Circle extends Object2d {
         drawSetup(camera, projection);
 
 //        glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawArrays(GL_TRIANGLE_FAN,0,vertices.size());
+        glDrawArrays(GL_POINTS,0,vertices.size());
 
         //GL_LINES
         //GL_LINE_STRIP

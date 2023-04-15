@@ -28,6 +28,11 @@ public class Main {
         window.init();
         GL.createCapabilities();
         camera.setPosition(0,0,2.0f);
+        glEnable(GL_DEPTH_TEST);
+        glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
+        glDepthMask(true);
+        glDepthFunc(GL_LEQUAL);
+        glDepthRange(0.0f, 0.5f);
 
         List<ShaderProgram.ShaderModuleData> shader = Arrays.asList(
                 //shaderFile lokasi menyesuaikan objectnya
@@ -41,13 +46,13 @@ public class Main {
 
 
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.35f,6));
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.35f,9));
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,1.0f,1.0f,1.0f),
-                new ArrayList<>(List.of(0.0f,0.15f,0.17f)), 0.37f,0.27f,0.01f,6));
+                new ArrayList<>(List.of(0.0f,0.15f,0.175f)), 0.37f,0.27f,0.01f,9));
 
         // CD Input Spaces
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
-                new ArrayList<>(List.of(-0.09f,-0.03f,0.17f)), 0.22f,0.03f,0.01f,6));
+                new ArrayList<>(List.of(-0.11f,-0.03f,0.175f)), 0.22f,0.03f,0.01f,9));
 
         // Tombol bulat
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
@@ -58,13 +63,13 @@ public class Main {
         // Tanda tambah
             //Vertical
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,6));
-        flappy.get(4).translateObject(-0.12f,-0.16f,0.17f);
+                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,9));
+        flappy.get(4).translateObject(-0.12f,-0.16f,0.175f);
             //Horizontal
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,1.0f,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,6));
+                new ArrayList<>(List.of(0.0f,0.0f,0.f)), 0.10f,0.03f,0.01f,9));
         flappy.get(5).rotateObject((float)Math.toRadians(90),0.0f,0.0f,1.0f);
-        flappy.get(5).translateObject(-0.12f,-0.16f,0.17f);
+        flappy.get(5).translateObject(-0.12f,-0.16f,0.175f);
 
         // Tombol Segitiga
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0f,0f,1.0f),
@@ -73,22 +78,56 @@ public class Main {
 
         // Tombol bulat
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                new ArrayList<>(List.of(0.13f,-0.203f,0.17f)), 0.02f,0.02f,0.02f,7));
+                new ArrayList<>(List.of(0.13f,-0.203f,0.18f)), 0.02f,0.02f,0.02f,7));
 
         // Tombol bulat Merah
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0.0f,0.0f,1.0f),
-                new ArrayList<>(List.of(0.055f,-0.245f,0.17f)), 0.035f,0.035f,0.02f,7));
+                new ArrayList<>(List.of(0.055f,-0.245f,0.18f)), 0.035f,0.035f,0.02f,7));
 
         // Tombol bulat (Kotak?)
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                new ArrayList<>(List.of(-0.158f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,6));
+                new ArrayList<>(List.of(-0.158f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,9));
 
         flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,1.0f,0.0f,1.0f),
-                new ArrayList<>(List.of(-0.09f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,6));
+                new ArrayList<>(List.of(-0.09f,-0.264f,0.17f)), 0.04f,0.02f,0.02f,9));
+
+        // Kaki kiri
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.2f,7));
+        flappy.get(11).rotateObject((float)Math.toRadians(90), 1.0f,0.0f,0.0f);
+        flappy.get(11).translateObject(-0.10f,-.5f,0.05f);
+
+        // Kaki kanan
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.2f,7));
+        flappy.get(12).rotateObject((float)Math.toRadians(90), 1.0f,0.0f,0.0f);
+        flappy.get(12).translateObject(0.10f,-.5f,0.05f);
+
+        // Kuku Kiri
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(-.10f,-.49f,0.13f)), 0.02f,0.02f,0.08f,7));
+        flappy.add(new Sphere(shader, new ArrayList<>(),  new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(-.10f,-.49f,0.13f)), 0.02f,0.02f,0.02f,0));
+        // Kuku Kanan
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(.10f,-.49f,0.13f)), 0.02f,0.02f,0.08f,7));
+        flappy.add(new Sphere(shader, new ArrayList<>(),  new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(.10f,-.49f,0.13f)), 0.02f,0.02f,0.02f,0));
+
+        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.2f,0.2f,0.2f,7));
+        flappy.get(17).rotateObject((float) Math.toRadians(90), 0.0f,1.0f,0.0f);
+        flappy.get(17).translateObject(1.0f,0.0f,0.0f);
 
 
-//        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1.0f,0.0f,0.0f,1.0f),
-//                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.1f,0.1f,0.1f,9));
+//        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+//                new ArrayList<>(List.of(0.0f,0.0f,-0.0f)), 0.1f,0.1f,0.4f,7));
+//        flappy.get(0).rotateObject((float) Math.toRadians(-45), 1.0f,0f,0f);
+//        flappy.get(0).translateObject(0f,0.02f,-0.35f);
+//        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
+//                new ArrayList<>(List.of(0.0f,0.0f,-0.22f)), 0.1f,0.1f,0.2f,7));
+
+
 
 
 
@@ -229,12 +268,12 @@ public class Main {
 
         if(window.isKeyPressed(GLFW_KEY_LEFT_SHIFT))
         {
-            camera.moveForward(0.02f);
+            camera.moveForward(0.01f);
         }
 
         if(window.isKeyPressed(GLFW_KEY_LEFT_CONTROL))
         {
-            camera.moveBackwards(0.02f);
+            camera.moveBackwards(0.01f);
         }
 
         if(window.getMouseInput().isLeftButtonPressed()){
