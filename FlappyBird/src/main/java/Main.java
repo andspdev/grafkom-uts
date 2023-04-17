@@ -223,7 +223,7 @@ public class Main {
         objects.add(new Sphere(
                 shader,
                 new ArrayList<>(),
-                new Vector4f((166/255f), (221/255f), (241/255f), 1.0f),
+                new Vector4f(0f, (128/255f), (255/255f), 1.0f),
                 new ArrayList<>(List.of(0f, 0f, 0f)),
                 0.4f,
                 0.4f,
@@ -934,14 +934,15 @@ public class Main {
     public void loop(){
         while (window.isOpen()) {
             window.update();
-            glClearColor(0.0f,
-                    0.0f, 0.0f,
-                    0.0f);
+            glClearColor(153/255f,
+                    1f, 1f,
+                    1f);
+//            glClearColor(0.0f,0.0f,0.0f,0.0f);
             GL.createCapabilities();
             input();
 
             for(Object2d object: flappy){
-                object.draw(camera, projection);
+                object. draw(camera, projection);
             }
             for (Object2d object: objects){
                 object.draw(camera,projection);
