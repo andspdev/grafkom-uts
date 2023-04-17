@@ -13,7 +13,7 @@ import static org.lwjgl.opengl.GL15.*;
 
 public class Circle extends Object2d {
 
-    File VerticeCircle = new File("src/VerticesCircle.txt");
+
     double r,cx,cy;
     double x,y,offset;
     int pick;

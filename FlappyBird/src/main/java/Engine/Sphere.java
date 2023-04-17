@@ -4,6 +4,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 
 import java.io.File;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.ListIterator;
@@ -12,7 +13,6 @@ import java.util.Vector;
 import static org.lwjgl.opengl.GL11.*;
 
 public class Sphere extends CircleNew{
-    File tes = new File("src/Vertices.txt");
     int sectorCount;
     int stackCount;
     Float radiusZ;
@@ -58,6 +58,9 @@ public class Sphere extends CircleNew{
         else if (pilih == 11){
             createParaboloid();
         }
+        else if (pilih == 12){
+            createCylinderBerdiri();
+        }
         setupVAOVBO();
     }
 
@@ -92,146 +95,166 @@ public class Sphere extends CircleNew{
 
         return (temp1);
     }
+    public ArrayList<Vector3f> generateBezierPoints(float firstX, float firstY, float firstZ, float secondX, float secondY, float secondZ, float thirdX, float thirdY, float thirdZ)
+    {
+        ArrayList<Vector3f> result = new ArrayList<>();
+        float newX, newY, newZ;
+        for(double i = 0; i <=1; i+= 0.01)
+        {
+            newX = (float) ((Math.pow((1-i), 2) * firstX) + (2 * (1-i) * i * secondX) + (Math.pow(i, 2) * thirdX));
+            newY = (float) ((Math.pow((1-i), 2) * firstY) + (2 * (1-i) * i * secondY) + (Math.pow(i, 2) * thirdY));
+            newZ = (float) ((Math.pow((1-i), 2) * firstZ) + (2 * (1-i) * i * secondZ) + (Math.pow(i, 2) * thirdZ));
+            result.add(new Vector3f(newX, newY, newZ));
+        }
+        return result;
+    }
 
     public void createCornerlessBox(){
         vertices.clear();
         ArrayList<Vector3f> temp = new ArrayList<>();
         Integer count = 0;
 
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2));
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2, centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2));
+        ArrayList<Vector3f> berzier1 = generateBezierPoints(centerPoint.get(0) + radiusX/2 - radiusX/16,
+                centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) + radiusX/2,centerPoint.get(1) + radiusY/2,centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) + radiusX/2,centerPoint.get(1) + radiusY/2 - radiusY/16,centerPoint.get(2) + radiusZ/2);
+        ArrayList<Vector3f> berzier2 = generateBezierPoints(centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) + radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) + radiusX/2, centerPoint.get(1) + radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) + radiusX/2 , centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) - radiusZ/2);
+        temp.addAll(berzier1);
+        temp.addAll(berzier2);
 
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2 , centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) + radiusZ/2));
-        ArrayList<Vector3f> safe1 = createCircles(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16,centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) + radiusZ/2), radiusZ, 0);
-        ArrayList<Vector3f> safe2 = createCircles(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) -radiusZ/2), radiusZ, 0);
-        temp.addAll(safe1);
-        temp.addAll(safe2);
-
-        for(int i = 0; i < safe1.size(); i++){
+        for(int i = 0; i < berzier1.size(); i++){
             if(count == 0){
-                temp.add(safe1.get(i));
-                temp.add(safe2.get(i));
+                temp.add(berzier1.get(i));
+                temp.add(berzier2.get(i));
                 count = 1;
             }
             else {
-                temp.add(safe2.get(i));
-                temp.add(safe1.get(i));
+                temp.add(berzier2.get(i));
+                temp.add(berzier1.get(i));
                 count = 0;
             }
         }
         count = 0;
-        temp.add(safe2.get(safe2.size()-1));
-//        temp.add(safe1.get(safe1.size() - 1));
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) - radiusZ/2));
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2));
-//        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2));
+        temp.add(berzier2.get(berzier2.size()-1));
+        temp.add(berzier1.get(berzier1.size() - 1));
 
-        ArrayList<Vector3f> safe3 = createCircles(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16,centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) + radiusZ/2), radiusZ, 1);
-        ArrayList<Vector3f> safe4 = createCircles(new Vector3f(centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) - radiusY/2 + radiusY/16 , centerPoint.get(2) -radiusZ/2), radiusZ, 1);
-        temp.addAll(safe4);
-        temp.addAll(safe3);
-        for(int i = 0; i < safe3.size(); i++){
-//            temp.add(safe4.get(i));
-//            temp.add(safe3.get(i));
+
+        ArrayList<Vector3f> berzier3 =  generateBezierPoints(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2);
+        ArrayList<Vector3f> berzier4 =  generateBezierPoints(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) + radiusX/2 - radiusX/16, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2);
+        temp.addAll(berzier3);
+        temp.addAll(berzier4);
+
+        for(int i = 0; i < berzier3.size(); i++){
+
             if(count == 0){
-                temp.add(safe4.get(i));
-                temp.add(safe3.get(i));
+                temp.add(berzier4.get(i));
+                temp.add(berzier3.get(i));
                 count = 1;
             }
             else {
-                temp.add(safe3.get(i));
-                temp.add(safe4.get(i));
+                temp.add(berzier3.get(i));
+                temp.add(berzier4.get(i));
                 count = 0;
             }
         }
         count = 0;
-        temp.add(safe3.get(safe3.size() - 1));
+        temp.add(berzier3.get(berzier3.size() - 1));
 
-////        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2));
-//
-////        temp.add(new Vector3f(centerPoint.get(0) + radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2));
-//        temp.add(new Vector3f(centerPoint.get(0) - radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2));
 
-        ArrayList<Vector3f> safe5 = createCircles(new Vector3f(centerPoint.get(0) - radiusX/2 + radiusX/16,centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) + radiusZ/2), radiusZ, 2);
-        ArrayList<Vector3f> safe6 = createCircles(new Vector3f(centerPoint.get(0) - radiusX/2 + radiusX/16, centerPoint.get(1) - radiusY/2 + radiusY/16 , centerPoint.get(2) -radiusZ/2), radiusZ, 2);
-        temp.addAll(safe5);
-        temp.addAll(safe6);
-        for(int i = 0; i < safe5.size(); i++){
-//            temp.add(safe5.get(i));
-//            temp.add(safe6.get(i));
+        ArrayList<Vector3f> berzier5 = generateBezierPoints(centerPoint.get(0) - radiusX/2  + radiusX/16, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) + radiusZ/2);
+        ArrayList<Vector3f> berzier6 = generateBezierPoints(centerPoint.get(0) - radiusX/2  + radiusX/16, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) - radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) - radiusY/2 + radiusY/16, centerPoint.get(2) - radiusZ/2);
+
+        temp.addAll(berzier5);
+        temp.addAll(berzier6);
+
+        for(int i = 0; i < berzier5.size(); i++){
+
             if(count == 0){
-                temp.add(safe5.get(i));
-                temp.add(safe6.get(i));
+                temp.add(berzier5.get(i));
+                temp.add(berzier6.get(i));
                 count = 1;
             }
             else {
-                temp.add(safe6.get(i));
-                temp.add(safe5.get(i));
+                temp.add(berzier6.get(i));
+                temp.add(berzier5.get(i));
                 count = 0;
             }
         }
         count = 0;
-        temp.add(safe6.get(safe6.size()- 1));
-//        temp.add(new Vector3f(centerPoint.get(0) - radiusX/2, centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2));
-        ArrayList<Vector3f> safe7 = createCircles(new Vector3f(centerPoint.get(0) - radiusX/2 + radiusX/16,centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) + radiusZ/2), radiusZ, 3);
-        ArrayList<Vector3f> safe8 = createCircles(new Vector3f(centerPoint.get(0) - radiusX/2 + radiusX/16, centerPoint.get(1) + radiusY/2 - radiusY/16 , centerPoint.get(2) -radiusZ/2), radiusZ, 3);
-        temp.addAll(safe7);
-        temp.addAll(safe8);
-        for(int i = 0; i < safe5.size(); i++){
-//            temp.add(safe7.get(i));
-//            temp.add(safe8.get(i));
+        temp.add(berzier6.get(berzier6.size()- 1));
+        ArrayList<Vector3f> berzier7 = generateBezierPoints(centerPoint.get(0) - radiusX/2 , centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2,
+                centerPoint.get(0) - radiusX/2 + radiusX/16, centerPoint.get(1) + radiusY/2, centerPoint.get(2) + radiusZ/2);
+        ArrayList<Vector3f> berzier8 = generateBezierPoints(centerPoint.get(0) - radiusX/2 , centerPoint.get(1) + radiusY/2 - radiusY/16, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) - radiusX/2, centerPoint.get(1) + radiusY/2, centerPoint.get(2) - radiusZ/2,
+                centerPoint.get(0) - radiusX/2 + radiusX/16, centerPoint.get(1) + radiusY/2, centerPoint.get(2) - radiusZ/2);
+        temp.addAll(berzier7);
+        temp.addAll(berzier8);
+
+        for(int i = 0; i < berzier7.size(); i++){
+
             if(count == 0){
-                temp.add(safe7.get(i));
-                temp.add(safe8.get(i));
+                temp.add(berzier7.get(i));
+                temp.add(berzier8.get(i));
                 count = 1;
             }
             else {
-                temp.add(safe8.get(i));
-                temp.add(safe7.get(i));
+                temp.add(berzier8.get(i));
+                temp.add(berzier8.get(i));
                 count = 0;
             }
         }
-        temp.add(safe8.get(safe8.size() - 1));
-        temp.add(safe1.get(0));
-        temp.add(safe7.get(safe7.size() - 1));
-        temp.add(safe2.get(0));
-        temp.add(safe8.get(safe8.size() - 1));
-        temp.add(safe4.get(0));
-        temp.add(safe1.get(safe1.size() - 1));
-        temp.add(safe3.get(0));
-        temp.add(safe2.get(safe2.size()-1));
-        temp.add(safe6.get(0));
-        temp.add(safe8.get(safe8.size() - 1));
-        temp.add(safe8.get(0));
-        temp.add(safe4.get(safe4.size() - 1));
-        temp.add(safe2.get(0));
-        temp.add(safe6.get(safe6.size() - 1));
-        temp.add(safe8.get(0));
-        temp.add(safe5.get(safe5.size() - 1));
-        temp.add(safe7.get(0));
-        temp.add(safe1.get(safe1.size() - 1));
-        temp.add(safe5.get(0));
-        temp.add(safe7.get(safe7.size() - 1));
-        temp.add(safe3.get(0));
-        temp.add(safe5.get(safe5.size() - 1));
-        temp.add(safe1.get(0));
-        temp.add(safe6.get(safe6.size() - 1));
-        temp.add(safe4.get(0));
-        temp.add(safe2.get(safe2.size() - 1));
-        temp.add(safe8.get(0));
-        temp.add(safe8.get(safe8.size() - 1));
-        temp.add(safe5.get(0));
-        temp.add(safe4.get(safe4.size() - 1));
-        temp.add(safe6.get(0));
-        temp.add(safe3.get(safe3.size() - 1));
-        temp.add(safe7.get(0));
-        temp.add(safe1.get(0));
-        temp.add(safe7.get(safe7.size() - 1));
-        temp.add(safe6.get(0));
-        temp.add(safe5.get(0));
-        temp.add(safe7.get(safe7.size() - 1));
-        temp.add(safe7.get(0));
-        temp.add(safe5.get(safe5.size() - 1));
+        temp.add(berzier8.get(berzier8.size() - 1));
+        temp.add(berzier1.get(0));
+        temp.add(berzier7.get(berzier7.size() - 1));
+        temp.add(berzier2.get(0));
+        temp.add(berzier8.get(berzier8.size() - 1));
+        temp.add(berzier4.get(0));
+        temp.add(berzier1.get(berzier1.size() - 1));
+        temp.add(berzier3.get(0));
+        temp.add(berzier2.get(berzier2.size()-1));
+        temp.add(berzier6.get(0));
+        temp.add(berzier8.get(berzier8.size() - 1));
+        temp.add(berzier8.get(0));
+        temp.add(berzier4.get(berzier4.size() - 1));
+        temp.add(berzier2.get(0));
+        temp.add(berzier6.get(berzier6.size() - 1));
+        temp.add(berzier8.get(0));
+        temp.add(berzier5.get(berzier5.size() - 1));
+        temp.add(berzier7.get(0));
+        temp.add(berzier1.get(berzier1.size() - 1));
+        temp.add(berzier5.get(0));
+        temp.add(berzier7.get(berzier7.size() - 1));
+        temp.add(berzier3.get(0));
+        temp.add(berzier5.get(berzier5.size() - 1));
+        temp.add(berzier1.get(0));
+        temp.add(berzier6.get(berzier6.size() - 1));
+        temp.add(berzier4.get(0));
+        temp.add(berzier2.get(berzier2.size() - 1));
+        temp.add(berzier8.get(0));
+        temp.add(berzier8.get(berzier8.size() - 1));
+        temp.add(berzier5.get(0));
+        temp.add(berzier4.get(berzier4.size() - 1));
+        temp.add(berzier6.get(0));
+        temp.add(berzier3.get(berzier3.size() - 1));
+        temp.add(berzier7.get(0));
+        temp.add(berzier1.get(0));
+        temp.add(berzier7.get(berzier7.size() - 1));
+        temp.add(berzier6.get(0));
+        temp.add(berzier5.get(0));
+        temp.add(berzier7.get(berzier7.size() - 1));
+        temp.add(berzier7.get(0));
+        temp.add(berzier5.get(berzier5.size() - 1));
 
 
 
@@ -319,6 +342,61 @@ public class Sphere extends CircleNew{
             y = centerPoint.get(1) + radiusY * (float)Math.sin(Math.toRadians(i));
 
             temp2.add(new Vector3f((float)x, (float)y, centerPoint.get(2) - radiusZ));
+        }
+
+        temp.addAll(temp1);
+        temp.addAll(temp2);
+
+        Integer count = 0;
+
+        for(int i = 0; i < temp1.size(); i++){
+            if(count == 0){
+                temp.add(temp1.get(i));
+                temp.add(temp2.get(i));
+                count = 1;
+            }
+            else {
+                temp.add(temp1.get(i));
+                temp.add(temp2.get(i));
+                count = 0;
+            }
+        }
+        temp.add(temp2.get(0));
+        temp.add(temp1.get(0));
+        temp.add(temp1.get(temp1.size() - 1));
+
+
+        vertices = temp;
+    }
+
+    public void createCylinderBerdiri()
+    {
+        vertices.clear();
+        ArrayList<Vector3f> temp = new ArrayList<>();
+        ArrayList<Vector3f> temp1 =  new ArrayList<>();
+        ArrayList<Vector3f> temp2 = new ArrayList<>();
+
+//        for (double i = 0; i < 360; i+=0.1)
+//        {
+//            x = centerPoint.get(0) + radiusX * (float)Math.cos(Math.toRadians(i));
+//            y = centerPoint.get(1) + radiusY * (float)Math.sin(Math.toRadians(i));
+//
+//            temp.add(new Vector3f((float)x, (float)y, centerPoint.get(2)));
+//            temp.add(new Vector3f((float)x, (float)y, centerPoint.get(2) - radiusZ));
+//        }
+
+        for (double i = 0; i < 360; i+=1){
+            x = centerPoint.get(0) + radiusX * (float)Math.cos(Math.toRadians(i));
+            y = centerPoint.get(2) + radiusZ * (float)Math.sin(Math.toRadians(i));
+
+            temp1.add(new Vector3f((float)x, (float)y, centerPoint.get(1)));
+        }
+
+        for (double i = 0; i < 360; i+=1){
+            x = centerPoint.get(0) + radiusX * (float)Math.cos(Math.toRadians(i));
+            y = centerPoint.get(2) + radiusZ * (float)Math.sin(Math.toRadians(i));
+
+            temp2.add(new Vector3f((float)x, (float)y, centerPoint.get(1) - radiusY));
         }
 
         temp.addAll(temp1);

@@ -9,7 +9,7 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 public class Star extends Object2d{
-    double cx,cy,size;
+    double cx,cy,cz,size;
     double x,y;
     List<Integer> index;
     int ibo;
@@ -43,7 +43,7 @@ public class Star extends Object2d{
     public void draw(Camera camera, Projection projection){
         drawSetup(camera, projection);
 
-        glLineWidth(1);
+        glLineWidth(3);
         glPointSize(1);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
