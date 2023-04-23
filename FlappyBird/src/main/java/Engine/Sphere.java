@@ -61,6 +61,9 @@ public class Sphere extends CircleNew{
         else if (pilih == 12){
             createCylinderBerdiri();
         }
+        else if(pilih == 13){
+            halfEllipsoid();
+        }
         setupVAOVBO();
     }
 
@@ -500,6 +503,24 @@ public class Sphere extends CircleNew{
         vertices=temp;
     }
 
+    public void halfEllipsoid(){
+
+        vertices.clear();
+
+        ArrayList<Vector3f> temp = new ArrayList<>();
+
+        for(double v = -Math.PI/2; v<= Math.PI/2; v+=Math.PI/60){
+            for(double u = -Math.PI; u<= Math.PI/80; u+=Math.PI/90){
+                float x = radiusX * (float)(Math.cos(v) * Math.cos(u));
+                float y = radiusY * (float)(Math.cos(v) * Math.sin(u));
+                float z = radiusZ * (float)(Math.sin(v));
+                temp.add(new Vector3f(x + centerPoint.get(0),y + centerPoint.get(1),z + centerPoint.get(2)));
+            }
+        }
+        vertices=temp;
+    }
+
+
     public void EllipticParaboloid(){
         vertices.clear();
 
@@ -633,14 +654,15 @@ public class Sphere extends CircleNew{
         vertices.add(tempVertices.get(7));
     }
     public void draw(Camera camera, Projection projection){
-        drawSetup(camera, projection);
-        // Draw the vertices
-        glLineWidth(1);
-
-        glPointSize(1);
-        glDrawArrays(GL_POLYGON, 0, vertices.size());
-        for (Object2d child:childObject){
-            child.draw(camera, projection);
+        if(this.flag) {
+            drawSetup(camera, projection);
+            // Draw the vertices
+            glLineWidth(1);
+            glPointSize(2);
+            glDrawArrays(GL_POLYGON, 0, vertices.size());
+            for (Object2d child : childObject) {
+                child.draw(camera, projection);
+            }
         }
     }
 

@@ -9,8 +9,8 @@ import static org.lwjgl.opengl.GL11.*;
 import static org.lwjgl.opengl.GL15.*;
 
 public class Star extends Object2d{
-    double cx,cy,cz,size;
-    double x,y;
+    double cx,cy,size;
+    double x,y,z;
     List<Integer> index;
     int ibo;
 
@@ -38,16 +38,17 @@ public class Star extends Object2d{
             vertices.add(new Vector3f((float) x, (float) y, 0.0f));
 
         }
+        vertices.add(new Vector3f((float) (cx),(float) (cy+0.05),0));
     }
 
     public void draw(Camera camera, Projection projection){
         drawSetup(camera, projection);
 
-        glLineWidth(3);
+        glLineWidth(1);
         glPointSize(1);
 
         glBindBuffer(GL_ELEMENT_ARRAY_BUFFER, ibo);
-        glDrawElements(GL_LINES,index.size(),GL_UNSIGNED_INT,0);
+        glDrawElements(GL_TRIANGLES,index.size(),GL_UNSIGNED_INT,0);
 //        glDrawArrays(GL_LINE_LOOP,0,vertices.size());
 
         //GL_LINES

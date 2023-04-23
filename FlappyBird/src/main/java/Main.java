@@ -1,4 +1,3 @@
-import Engine.Object;
 import Engine.*;
 import org.joml.Matrix4f;
 import org.joml.Vector2f;
@@ -6,7 +5,7 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-
+import java.awt.Robot;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
@@ -18,10 +17,16 @@ public class Main {
 
 
     private Window window = new Window(800,600,"Hello World");
+
+
+
+
     private ArrayList<Object2d> flappy = new ArrayList<>();
     private ArrayList<Object2d> objects = new ArrayList<>();
     private ArrayList<Object2d> flepi2 = new ArrayList<>();
     private ArrayList<Object2d> flepi3 = new ArrayList<>();
+    private ArrayList<Object2d> env = new ArrayList<>();
+    private ArrayList<Matrix4f> objectstemp = new ArrayList<>();
     Projection projection = new Projection(window.getWidth(),window.getHeight());
     Camera camera = new Camera();
     Integer counterkaki = 0;
@@ -30,7 +35,17 @@ public class Main {
     Boolean picker = true;
     Boolean nendangBalik = false;
 
-    List<Integer> starIndex = Arrays.asList(0,3,3,1,1,4,4,2,2,0);
+    double temp = 0;
+    double temp2 = 0;
+    int count = 1;
+    int count2 = 1;
+    boolean flag = false;
+    boolean flag2 = false;
+
+    int count3 = 100;
+
+    List<Integer> starIndex = Arrays.asList(0,5,3,4,5,2,1,5,4,1,5,3);
+
 
 
     private int countKakiKiriJalan = 0;
@@ -47,16 +62,20 @@ public class Main {
     int delay = 0;
     int interval = 20;
 
+
+
+
     Matrix4f bolapos = new Matrix4f();
     Matrix4f kakiKiri = new Matrix4f();
     Matrix4f kakibola = new Matrix4f();
     Matrix4f KakiSphere = new Matrix4f();
 
+
     public void init(){
 
         window.init();
         GL.createCapabilities();
-        camera.setPosition(0,0,6.0f);
+        camera.setPosition(0,0.85f,4.5f);
         glEnable(GL_DEPTH_TEST);
         glHint(GL_PERSPECTIVE_CORRECTION_HINT, GL_NICEST);
         glDepthMask(true);
@@ -73,6 +92,165 @@ public class Main {
                                 , GL_FRAGMENT_SHADER)
         );
         Vector4f primary = new Vector4f((94/255f),(167/255f),(151/255f),1f);
+
+
+        // Badan 0
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.25f,0));
+
+        // Kepala awan atas 1
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.0f,0.55f,0.0f)),0.425f,0.5f,0.4f,0));
+
+        // Kepala awan atas kiri 2
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.315f,0.35f,0.35f,0));
+
+        flepi2.get(2).rotateObject((float) Math.toRadians(45), 0f, 0f, 1f);
+        flepi2.get(2).translateObject(-0.375f,0.295f,0.0f);
+
+        // Kepala awan atas kanan 3
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.275f,0.32f,0.35f,0));
+
+        flepi2.get(3).rotateObject((float) Math.toRadians(-45), 0f, 0f, 1f);
+        flepi2.get(3).translateObject(0.375f,0.275f,0.0f);
+
+        // badan awan kiri 4
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.375f,-0.2f,0.0f)),0.38f,0.34f,0.35f,0));
+
+        // badan awan kanan 5
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.3625f,0.34f,0.35f,0));
+
+        flepi2.get(5).rotateObject((float) Math.toRadians(-30), 0f, 0f, 1f);
+        flepi2.get(5).translateObject(0.350f,-0.2f,0.0f);
+
+        // badan awan bawah kiri 6
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.325f,-0.55f,0.0f)),0.17f,0.1f,0.18f,0));
+
+        // badan awan bawah kanan 7
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.350f,-0.55f,0.0f)),0.17f,0.1f,0.18f,0));
+
+        // kaki kiri 8
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.145f,-0.65f,0.0f)),0.1f,0.15f,0.15f,0));
+
+        // kaki tengah 9
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,-0.665f,0.0f)),0.1f,0.15f,0.15f,0));
+
+        // kaki kanan 10
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.145f,-0.65f,0.0f)),0.1f,0.15f,0.15f,0));
+
+        // star 11
+        flepi2.add(new Star(shader,
+                new ArrayList<>(),
+                new Vector4f((204f/255f),(204f/255f),0.0f,1.0f),
+                starIndex,0f,0f,0.15f));
+
+        flepi2.get(11).rotateObject((float) Math.toRadians(-20), 0f, 0f, 1f);
+        flepi2.get(11).translateObject(0f,0.6f,0.4f);
+
+        // alis kiri
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.1f,0.009f,0.215f,9));
+
+        flepi2.get(12).rotateObject((float) Math.toRadians(-5), 0f, 0f, 1f);
+        flepi2.get(12).translateObject(-0.18f,0.35f,0.22f);
+
+        // alis kanan
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.1f,0.009f,0.215f,9));
+
+        flepi2.get(13).rotateObject((float) Math.toRadians(5), 0f, 0f, 1f);
+        flepi2.get(13).translateObject(0.18f,0.35f,0.22f);
+
+        // mata kiri
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.055f,0.215f,9));
+
+        flepi2.get(14).rotateObject((float) Math.toRadians(-5), 0f, 0f, 1f);
+        flepi2.get(14).translateObject(-0.18f,0.3f,0.22f);
+
+        // mata kanan
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.055f,0.215f,9));
+
+        flepi2.get(15).rotateObject((float) Math.toRadians(5), 0f, 0f, 1f);
+        flepi2.get(15).translateObject(0.18f,0.3f,0.22f);
+
+        //mulut
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.259f, 0.242f, 0.260f, 1.0f),
+                new ArrayList<>(List.of(0.0f,0.2f,0.3f)),0.125f,0.075f,0.04f,0));
+
+        // badan awan bawah tengahe
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,-0.29f,0f)),0.37f,0.37f,0.33f,0));
+
+        // tangan kiri
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.05f,0.45f,7));
+
+        flepi2.get(18).rotateObject((float) Math.toRadians(-90), 1f, 0f, 0f);
+        flepi2.get(18).translateObject(-0.3f,0.05f,0.315f);
+
+        // tangan kanan
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.05f,0.45f,7));
+
+        flepi2.get(19).rotateObject((float) Math.toRadians(-90), 1f, 0f, 0f);
+        flepi2.get(19).translateObject(0.3f,0.05f,0.315f);
+
+        // bahu kiri 20
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.3f,0.05f,0.3f)),0.075f,0.075f,0.065f,0));
+
+        // bahu kanan 21
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.3f,0.05f,0.3f)),0.075f,0.075f,0.065f,0));
+
+        // jari tangan kiri 22 23 24
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.3f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.33f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(-0.27f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        // jari tangan kanan 25 26 27
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.3f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.33f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.90f, 0.53f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.27f,-0.41f,0.33f)),0.015f,0.075f,0.02f,0));
+
+        // bibir cemberut hitam
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0f, 0f, 0f, 1.0f),
+                new ArrayList<>(List.of(0.1f,0.2f,0.32f)),0.095f,0.1f,0.03f,10));
+        flepi2.get(28).translateObject(-0.1f, -0.2f, -0.32f);
+        flepi2.get(28).rotateObject((float)Math.toRadians(-90f),0f, 0f, 1f );
+        flepi2.get(28).translateObject(0.13f,0.2f,0.35f);
+        flepi2.get(28).translateObject(0f,0f,0.f);
+        // bibir cemberut warna
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
+                new ArrayList<>(List.of(0.1175f,0.2f,0.35f)),0.07f,0.1f,0.07f,0));
+
+        // bola
+        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(1f, 1f, 1f, 1.0f),
+                new ArrayList<>(List.of(0.0f,0.55f,0.7f)),0.29f,0.29f,0.29f,0));
+
+        flepi2.get(30).setFlag();
+
 
 
         flappy.add(new Sphere(shader, new ArrayList<>(),  primary,
@@ -199,7 +377,7 @@ public class Main {
 
         flappy.add(new Sphere(shader, new ArrayList<>(), primary,
                 new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.07f,0.07f,0.07f,0));
-        flappy.get(25).translateObject(-.10f,-0.53f,0.24f);
+        flappy.get(25).translateObject(-.10f,-0.48f,0.24f);
 
 
        flappy.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0.0f,0.0f,0.0f,1.0f),
@@ -646,10 +824,7 @@ public class Main {
         for (int i = 0; i< flappy.size(); i++){
             flappy.get(i).translateObject(-1.9f,0.0f,0.0f);
         }
-        KakiSphere = flappy.get(14).getMatrix();
-        kakibola = flappy.get(13).getMatrix();
-        kakiKiri = flappy.get(11).getMatrix();
-        bolapos = flappy.get(25).getMatrix();
+
         Timer timer = new Timer();
         int delay = 1400;
         int interval = 1600;
@@ -691,109 +866,6 @@ public class Main {
         timer.schedule(task, delay, interval);
 
 
-
-//        flepi2.add(new Sphere(shader, new ArrayList<>(), new Vector4f((32/255f),(201/255f),(184/255f),1.0f),
-//                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.35f,6));
-
-        // Badan 0
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.795f, 0.328f, 0.820f, 1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.5f,0.7f,0.3f,0));
-
-        // Kepala awan atas 1
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0.0f,0.55f,0.0f)),0.425f,0.5f,0.4f,0));
-
-        // Kepala awan atas kiri 2
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.315f,0.35f,0.35f,0));
-
-        flepi2.get(2).rotateObject((float) Math.toRadians(45), 0f, 0f, 1f);
-        flepi2.get(2).translateObject(-0.375f,0.295f,0.0f);
-
-        // Kepala awan atas kanan 3
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.275f,0.32f,0.35f,0));
-
-        flepi2.get(3).rotateObject((float) Math.toRadians(-45), 0f, 0f, 1f);
-        flepi2.get(3).translateObject(0.375f,0.275f,0.0f);
-
-        // badan awan kiri 4
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(-0.375f,-0.2f,0.0f)),0.38f,0.34f,0.35f,0));
-
-        // badan awan kanan 5
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.3625f,0.34f,0.35f,0));
-
-        flepi2.get(5).rotateObject((float) Math.toRadians(-30), 0f, 0f, 1f);
-        flepi2.get(5).translateObject(0.350f,-0.2f,0.0f);
-
-        // badan awan bawah kiri 6
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(-0.325f,-0.55f,0.0f)),0.17f,0.1f,0.18f,0));
-
-        // badan awan bawah kanan 7
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0.350f,-0.55f,0.0f)),0.17f,0.1f,0.18f,0));
-
-        // kaki kiri 8
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(-0.145f,-0.65f,0.0f)),0.1f,0.15f,0.15f,0));
-
-        // kaki tengah 9
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0f,-0.665f,0.0f)),0.1f,0.15f,0.15f,0));
-
-        // kaki kanan 10
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0.145f,-0.65f,0.0f)),0.1f,0.15f,0.15f,0));
-
-        // star 11
-        flepi2.add(new Star(shader,
-                new ArrayList<>(),
-                new Vector4f((204f/255f),(204f/255f),0.0f,1.0f),
-                starIndex,0f,0f,0.20f));
-
-        flepi2.get(11).rotateObject((float) Math.toRadians(-20), 0f, 0f, 1f);
-        flepi2.get(11).scaleObject(0.5f,0.5f,0.5f);
-        flepi2.get(11).translateObject(0f,0.67f,.38f);
-
-
-        // alis kiri
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.1f,0.009f,0.415f,9));
-
-        flepi2.get(12).rotateObject((float) Math.toRadians(-5), 0f, 0f, 1f);
-        flepi2.get(12).translateObject(-0.18f,0.35f,0.15f);
-
-        // alis kanan
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.1f,0.009f,0.415f,9));
-
-        flepi2.get(13).rotateObject((float) Math.toRadians(5), 0f, 0f, 1f);
-        flepi2.get(13).translateObject(0.18f,0.35f,0.15f);
-
-        // mata kiri
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.055f,0.415f,9));
-
-        flepi2.get(14).rotateObject((float) Math.toRadians(-5), 0f, 0f, 1f);
-        flepi2.get(14).translateObject(-0.18f,0.3f,0.15f);
-
-        // mata kanan
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f((0f),(0f),(0f), 1.0f),
-                new ArrayList<>(List.of(0f,0f,0f)),0.05f,0.055f,0.415f,9));
-
-        flepi2.get(15).rotateObject((float) Math.toRadians(5), 0f, 0f, 1f);
-        flepi2.get(15).translateObject(0.18f,0.3f,0.15f);
-
-        //mulut
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.259f, 0.242f, 0.260f, 1.0f),
-                new ArrayList<>(List.of(0.0f,0.2f,0.315f)),0.125f,0.075f,0.05f,0));
-
-        // badan awan bawah tengahe
-        flepi2.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0.724f, 0.429f, 0.740f, 1.0f),
-                new ArrayList<>(List.of(0f,-0.29f,0f)),0.37f,0.37f,0.33f,0));
 
 
         //badan bawah
@@ -895,30 +967,59 @@ public class Main {
         flepi3.add(new Sphere(shader, new ArrayList<>(),  new Vector4f(1f,0f,0f,1f),
                 new ArrayList<>(List.of(0.10f,-0.64f,-0.01f)), 0.02f,0.02f,0.02f,0));
 
-        // Tangan kanan
+        // Tangan Kiri
         flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.05f,7));
-        flepi3.get(22).rotateObject((float) Math.toRadians(90), 0.0f,1.0f,0.0f);
-        flepi3.get(22).translateObject(0.4f,0.0f,0.0f);
+                new ArrayList<>(List.of(.0f,.0f,.0f)), 0.02f,0.02f,0.07f,7));
+        flepi3.get(22).rotateObject((float) Math.toRadians(-90), 0.0f,1.0f,0.0f);
+        flepi3.get(22).translateObject(-0f,.0f,.4f);
+        flepi3.add(new Sphere(shader, new ArrayList<>(),new Vector4f(0,0,1,1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.02f,0.02f,0.02f,0));
+        flepi3.get(23).translateObject(-.0f,.0f,.4f);
 
+        flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f), new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                0.02f,0.02f,0.1f,7));
+        flepi3.get(24).rotateObject((float) Math.toRadians(-90), 1.0f,0.0f,.0f);
+
+        flepi3.get(24).translateObject(-.0f,0.0f,0.4f);
+
+        flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1,0,0,1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.02f,0));
+        flepi3.get(25).translateObject(-.0f,-0.1f,0.4f);
+        for (int i = 22; i<= 25; i++){
+            flepi3.get(i).scaleObject(1.5f,1.5f,1.5f);
+        }
+        for (int i = 22; i<= 25; i++){
+            flepi3.get(i).translateObject(-0.58f,0.0f,-0.7f);
+        }
+
+        // Tangan Kanan
         flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.1f,7));
-        flepi3.get(23).rotateObject((float) Math.toRadians(-90), 0.0f,1.0f,0.0f);
-        flepi3.get(23).rotateObject((float)Math.toRadians(-90), 0.0f,1.0f,1.0f);
-        flepi3.get(23).translateObject(+0.5f,0.0f,0.0f);
-
-
-        // Tangan kiri
+                new ArrayList<>(List.of(.0f,.0f,.0f)), 0.02f,0.02f,0.07f,7));
+        flepi3.get(26).rotateObject((float) Math.toRadians(90), 0.0f,1.0f,0.0f);
+        flepi3.get(26).translateObject(-0f,.0f,.4f);
         flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.05f,7));
-        flepi3.get(24).rotateObject((float) Math.toRadians(90), 0.0f,1.0f,0.0f);
-        flepi3.get(24).translateObject(0.4f,0.0f,0.0f);
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),0.02f,0.02f,0.02f,0));
+        flepi3.get(27).translateObject(-.0f,.0f,.4f);
 
-        flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f),
-                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.1f,7));
-        flepi3.get(25).rotateObject((float) Math.toRadians(-90), 0.0f,1.0f,0.0f);
-        flepi3.get(25).rotateObject((float)Math.toRadians(-90), 0.0f,1.0f,1.0f);
-        flepi3.get(25).translateObject(-0.5f,0.0f,0.0f);
+        flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(0,0,1,1.0f), new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                0.02f,0.02f,0.1f,7));
+        flepi3.get(28).rotateObject((float) Math.toRadians(-90), 1.0f,0.0f,.0f);
+
+        flepi3.get(28).translateObject(-.0f,0.0f,0.4f);
+
+        flepi3.add(new Sphere(shader, new ArrayList<>(), new Vector4f(1,0,0,1.0f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)), 0.02f,0.02f,0.02f,0));
+        flepi3.get(29).translateObject(-.0f,-0.1f,0.4f);
+        for (int i = 26; i<= 29; i++){
+            flepi3.get(i).scaleObject(1.5f,1.5f,1.5f);
+        }
+        for (int i = 26; i<= 29; i++){
+            flepi3.get(i).translateObject(0.58f,0.0f,-0.7f);
+        }
+
+
+
+
 
         for (int i = 0; i< objects.size(); i++){
             objects.get(i).translateObject(2.0f,0.0f,0.0f);
@@ -927,6 +1028,428 @@ public class Main {
         for (int i = 0; i< flepi3.size(); i++){
             flepi3.get(i).translateObject(0.0f,2.0f,0.0f);
         }
+        // Latar
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((81/255f),(158/255f),(86/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                2.5f,
+                0.1f,
+                3.5f,
+                9
+        ));
+
+
+        // Dinding Kiri
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((236/255f),(185/255f),(104/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                0.1f,
+                1.8f,
+                3.5f,
+                9
+        ));
+
+        env.get(1).translateObject(-1.2f, .95f, 0f);
+
+
+        // Dinding kanan
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((236/255f),(185/255f),(104/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                0.1f,
+                1.8f,
+                3.5f,
+                9
+        ));
+
+        env.get(2).translateObject(1.2f, .95f, 0f);
+
+
+        // Dinding Belakang
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((236/255f),(185/255f),(104/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                2.5f,
+                1.8f,
+                0.1f,
+                9
+        ));
+
+        env.get(3).translateObject(0f, .95f, -1.75f);
+
+
+
+
+        // Kursi
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((136/255f),(0/255f),(21/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                .5f,
+                .1f,
+                .2f,
+                6
+        ));
+        env.get(4).translateObject(0.1f, .1f, -1.39f);
+        env.get(4).rotateObject((float) Math.toRadians(35), 0f, 1f, 0f);
+
+
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((166/255f),(3/255f),(28/255f),1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                .5f,
+                .25f,
+                .02f,
+                6
+        ));
+        env.get(5).translateObject(0.1f, .175f, -1.5f);
+        env.get(5).rotateObject((float) Math.toRadians(35), 0f, 1f, 0f);
+        // End Kursi
+
+
+
+        // Pohon Cemara
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((136/255f),(0/255f),(21/255f), 1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                .04f,
+                .45f,
+                .04f,
+                12
+        ));
+
+        env.get(6).translateObject(.7f, -1.15f, 0f);
+        env.get(6).rotateObject((float) Math.toRadians(-90), -1f, 0f, 0f);
+
+
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f((56/255f),(108/255f),(96/255f), 1f),
+                new ArrayList<>(List.of(0.0f,0.0f,0.0f)),
+                .1f,
+                .1f,
+                .25f,
+                11
+        ));
+
+        env.get(7).rotateObject((float) Math.toRadians(90),1f, 0f, 0f);
+        env.get(7).translateObject(.7f, 1f, -1.15f);
+        // End Pohon Cemara
+
+
+
+        // Jalan vertical
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(6/255f,6/255f,6/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.4f,
+                0.01f,
+                3.5f,
+                9
+        ));
+        env.get(8).translateObject(0f, 0.055f, 0f);
+
+
+        // Jalan horizontal
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(8/255f,8/255f,8/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                2.4f,
+                0.01f,
+                0.4f,
+                9
+        ));
+        env.get(9).translateObject(0f, 0.055f, 0f);
+
+
+        // Border tepi
+        env.add(new Line(shader,
+                new ArrayList<>(List.of(
+                        new Vector3f(-1.15f,.053f,1.75f),
+                        new Vector3f(-1.15f,.053f,-1.69f),
+                        new Vector3f(-1.15f,1.853f,-1.69f), // Vertical Belakang Kanan
+                        new Vector3f(-1.15f,.053f,-1.69f),
+
+                        new Vector3f(1.15f,.053f,-1.69f),
+                        new Vector3f(1.15f,1.853f,-1.69f), // Vetical Belakang Kiri
+                        new Vector3f(1.15f,.053f,-1.69f),
+                        new Vector3f(1.15f,.053f, 1.75f)
+                )
+                ), new Vector4f(153/255f,76/255f,0f,1f)));
+        //
+
+
+
+        // Kotak Surat (Tiang)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(110/255f,110/255f,110/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.02f,
+                0.23f,
+                0.02f,
+                9
+        ));
+        env.get(11).translateObject(0.4f, 0.1f, -0.5f);
+
+
+        // Kotak Surat (Tempat Surat)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(110/255f,110/255f,110/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.06f,
+                0.05f,
+                0.095f,
+                9
+        ));
+        env.get(12).translateObject(0.4f, 0.23f, -0.5f);
+
+
+
+        // Jalan lurus putih (tengah)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(255f,255f,255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.03f,
+                0.01f,
+                0.7f,
+                9
+        ));
+        env.get(13).translateObject(0f, 0.06f, 0f);
+
+
+        // Jalan lurus putih (depan)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(255f,255f,255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.03f,
+                0.01f,
+                0.7f,
+                9
+        ));
+        env.get(14).translateObject(0f, 0.06f, 1.15f);
+
+
+        // Jalan lurus putih (belakang)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(255f,255f,255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.03f,
+                0.01f,
+                0.7f,
+                9
+        ));
+        env.get(15).translateObject(0f, 0.06f, -1.15f);
+
+
+        // Jalan lurus putih (horizontal - kiri)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(255f,255f,255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.5f,
+                0.01f,
+                0.03f,
+                9
+        ));
+        env.get(16).translateObject(-0.7f, 0.06f, 0f);
+
+
+        // Jalan lurus putih (horizontal - kanan)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(255f,255f,255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.5f,
+                0.01f,
+                0.03f,
+                9
+        ));
+        env.get(17).translateObject(0.7f, 0.06f, 0f);
+
+
+
+        // Air Mancur Bawah (1)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(109/255f,109/255f,109/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.27f,
+                0.27f,
+                0.09f,
+                7
+        ));
+
+        env.get(18).translateObject(0.65f, 1f, -0.056f);
+        env.get(18).rotateObject((float) Math.toRadians(90), 1f, 0f, 0f);
+
+
+        // Air (1)
+        env.add(new Circle(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(5/255f, 136/255f, 252/255f,1f),
+                0.23f,
+                0,
+                0,
+                2,
+                0
+        ));
+        env.get(19).translateObject(0.65f, 0.15f, 1f);
+
+
+        // Air Mancur Bawah (Tiang)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(109/255f,109/255f,109/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.08f,
+                0.08f,
+                0.15f,
+                7
+        ));
+
+        env.get(20).translateObject(0.65f, 1f, -0.07f);
+        env.get(20).rotateObject((float) Math.toRadians(90), 1f, 0f, 0f);
+
+
+        // Air Mancur Bawah (2)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(109/255f,109/255f,109/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.14f,
+                0.14f,
+                0.07f,
+                7
+        ));
+
+        env.get(21).translateObject(0.65f, 1f, -0.2f);
+        env.get(21).rotateObject((float) Math.toRadians(90), 1f, 0f, 0f);
+
+
+        // Air (2)
+        env.add(new Circle(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(5/255f, 136/255f, 252/255f,1f),
+                0.1f,
+                0,
+                0,
+                2,
+                0
+        ));
+        env.get(22).translateObject(0.65f, 0.28f, 1f);
+
+        // Air Mancur Bawah (Tiang 2)
+        env.add(new Sphere(
+                shader,
+                new ArrayList<>(),
+                new Vector4f(109/255f,109/255f,109/255f,1f),
+                new ArrayList<>(List.of(0.0f, 0.0f, 0.0f)),
+                0.03f,
+                0.03f,
+                0.06f,
+                7
+        ));
+
+        env.get(23).translateObject(0.65f, 1f, -0.25f);
+        env.get(23).rotateObject((float) Math.toRadians(90), 1f, 0f, 0f);
+
+        env.add(new Line(shader, new ArrayList<>(List.of(
+                new Vector3f(-0.9f,.20f,1.3f),
+                new Vector3f(-0.9f,0.06f,1.3f),
+                new Vector3f(-0.9f,0.06f,1.15f),
+                new Vector3f(-0.9f,0.20f,1.2f),
+                new Vector3f(-0.9f, 0.20f,1.3f),
+
+
+                new Vector3f(-0.6f,.20f,1.3f),
+                new Vector3f(-0.6f,0.06f,1.3f),
+                new Vector3f(-0.6f,0.06f,1.15f),
+                new Vector3f(-0.6f,0.20f,1.2f),
+                new Vector3f(-0.6f, 0.20f,1.3f),
+
+                new Vector3f(-0.6f, 0.06f,1.3f),
+                new Vector3f(-0.9f, 0.06f,1.3f)
+
+        )), new Vector4f(0.0f,0.0f,0.0f,1.0f)));
+
+        env.get(24).translateObject(-0.1f,0.0f,0.4f);
+
+
+
+        for(Object2d object : flappy){
+            object.translateObject(-0.8f,0.7f,2.9f);
+        }
+        for(Object2d object : flappy){
+            object.scaleObject(0.3f,0.3f,0.3f);
+        }
+        KakiSphere = flappy.get(14).getMatrix();
+        kakibola = flappy.get(13).getMatrix();
+        kakiKiri = flappy.get(11).getMatrix();
+        bolapos = flappy.get(25).getMatrix();
+
+        for (Object2d object : objects){
+            object.scaleObject(0.3f,0.3f,0.3f);
+        }
+        for (Object2d object :  objects){
+            object.translateObject(0.0f,0.257f,-0.5f);
+        }
+
+        for (int i = 0; i< objects.size(); i++){
+            objectstemp.add(objects.get(i).getMatrix());
+        }
+        for(Object2d object : flepi2){
+            object.scaleObject(0.3f,0.3f,0.3f);
+        }
+        for (Object2d object : flepi2){
+            object.translateObject(-0.5f,0.35f,-0.7f);
+        }
+
+        for (Object2d object : flepi3){
+            object.scaleObject(0.3f,0.3f,0.3f);
+        }
+
+        for (Object2d object : flepi3){
+            object.rotateObject((float) Math.toRadians(-90),0.0f,1.0f,0.0f);
+        }
+        for (Object2d object : flepi3){
+            object.translateObject(-0.3f,-0.35f,1.4f);
+        }
+
 
 
 
@@ -941,12 +1464,17 @@ public class Main {
             GL.createCapabilities();
             input();
 
+            for(Object2d object : env){
+                object.draw(camera,projection);
+            }
+
             for(Object2d object: flappy){
-                object. draw(camera, projection);
+                object.draw(camera, projection);
             }
             for (Object2d object: objects){
                 object.draw(camera,projection);
             }
+
             for (Object2d object: flepi2){
                 object.draw(camera,projection);
             }
@@ -977,12 +1505,81 @@ public class Main {
                                 , GL_FRAGMENT_SHADER)
         );
 
+//
+//        TimerTask task4 = new TimerTask() {
+//            @Override
+//            public void run() {
+//                for (Object2d object : objects){
+//                    object.translateObject(0.0f,0.0f,0.001f);
+//                }
+//                System.out.println("Run Task4");
+//            }
+//
+//
+//        };
+//
+//        TimerTask task3 = new TimerTask() {
+//            @Override
+//            public void run() {
+//                for (int i = 0; i < objects.size(); i++){
+//                    objects.get(i).getMatrix().set(objectstemp.get(i));
+//                }
+//                System.out.println("Run Task3");
+//            }
+//        };
+//
+//
+//        timer.schedule(task4,0,interval);
+//
+//        timer.schedule(new TimerTask() {
+//            @Override
+//            public void run() {
+//                task4.cancel();
+//                task3.run();
+//                task3.cancel();
+//
+//            }
+//        }, 3000);
+
+        if (window.isKeyPressed(GLFW_KEY_F)){
+            Vector3f posJo = flepi3.get(24).getMatrix().transformPosition(new Vector3f(0.0f,0.0f,0.0f));
+            flepi3.get(24).translateObject(-posJo.x, -posJo.y, -posJo.z);
+            flepi3.get(25).translateObject(-posJo.x, -posJo.y, -posJo.z);
+
+            flepi3.get(24).rotateObject((float)Math.toRadians(2), .0f,.0f,1.0f);
+            flepi3.get(25).rotateObject((float)Math.toRadians(2), .0f,.0f,1.0f);
+
+            flepi3.get(24).translateObject(posJo.x, posJo.y, posJo.z);
+            flepi3.get(25).translateObject(posJo.x,posJo.y,posJo.z);
+        }
+
+
+        if (window.isKeyPressed(GLFW_KEY_T)){
+            for (Object2d object : objects){
+                object.translateObject(0.0f,0.0f,0.01f);
+            }
+        }
+        if (window.isKeyPressed(GLFW_KEY_C)){
+            for (int i = 0; i < objects.size(); i++){
+                objects.get(i).getMatrix().set(objectstemp.get(i));
+            }
+        }
+        if (window.isKeyPressed(GLFW_KEY_G)){
+            for (Object2d object : objects){
+                Vector3f safe = object.getMatrix().transformPosition(new Vector3f(0.0f,0.0f,0.0f));
+                object.translateObject(-safe.x, -safe.y, -safe.z);
+                object.rotateObject((float) Math.toRadians(2f), 0.0f,1.0f,0.0f);
+                object.translateObject(safe.x,safe.y,safe.z);
+
+            }
+        }
+
         // Lambai tangan kanan
 //        if (window.isKeyPressed(GLFW_KEY_T)){
-            Vector3f posisi = flappy.get(11).getMatrix().transformPosition(new Vector3f(0.0f,0.0f,0.0f));
-            flappy.get(11).translateObject(-posisi.x, -posisi.y,-posisi.z);
-            flappy.get(13).translateObject(-posisi.x, -posisi.y, -posisi.z);
-            flappy.get(14).translateObject(-posisi.x, -posisi.y, -posisi.z);
+            Vector3f posisi1 = flappy.get(11).getMatrix().transformPosition(new Vector3f(0.0f,0.0f,0.0f));
+            flappy.get(11).translateObject(-posisi1.x, -posisi1.y,-posisi1.z);
+            flappy.get(13).translateObject(-posisi1.x, -posisi1.y, -posisi1.z);
+            flappy.get(14).translateObject(-posisi1.x, -posisi1.y, -posisi1.z);
 
             if (counterNendang <= 15 && boolNendang && !nendangBalik){
                 flappy.get(11).rotateObject((float)Math.toRadians(5f),1.0f,0.0f,.0f);
@@ -1032,15 +1629,15 @@ public class Main {
                         task1.run();
 
                     }
-                }, 3000);
+                }, 2000);
 
 
 
             }
 
-            flappy.get(11).translateObject(posisi.x,posisi.y,posisi.z);
-            flappy.get(13).translateObject(posisi.x,posisi.y,posisi.z);
-            flappy.get(14).translateObject(posisi.x,posisi.y,posisi.z);
+            flappy.get(11).translateObject(posisi1.x,posisi1.y,posisi1.z);
+            flappy.get(13).translateObject(posisi1.x,posisi1.y,posisi1.z);
+            flappy.get(14).translateObject(posisi1.x,posisi1.y,posisi1.z);
 //        }
 
 
@@ -1119,6 +1716,8 @@ public class Main {
             countKakiKiriJalan--;
         }
 
+
+
         if (countKakiKiriJalan < -17)
             kaki_kiri_jalan = true;
 
@@ -1185,6 +1784,133 @@ public class Main {
         objects.get(26).translateObject(tangan_kiri.x,tangan_kiri.y,tangan_kiri.z);
 
         // End Animasi
+
+        // Animasi Steven H
+        // animasi 1 hidup kaya (ubur-ubur)
+        if(window.isKeyPressed(GLFW_KEY_1))
+        {
+            flag = true;
+        }
+
+        if(window.isKeyReleased(GLFW_KEY_1))
+        {
+            if (flag) {
+                System.out.println(temp);
+                for (Object2d i : flepi2) {
+                    if (count < 0) {
+                        i.translateObject(0f, -0.0008f, 0f);
+                    } else {
+                        i.translateObject(0f, 0.0008f, 0f);
+
+                    }
+                }
+                temp += count;
+                if (temp > 15) {
+                    count *= -1;
+                } else if (temp < 0) {
+                    count *= -1;
+                }
+            }
+        }
+
+        //animasi lempar bola
+
+        if(window.isKeyPressed(GLFW_KEY_2))
+        {
+            if (count2 > 0) {
+                Vector3f posisi = flepi2.get(18).updateCenterPoint();
+                flepi2.get(18).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(22).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(23).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(24).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(19).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(25).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(26).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                flepi2.get(27).translateObject(-posisi.x, -posisi.y, -posisi.z);
+
+                flepi2.get(18).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, .0f);
+                flepi2.get(22).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0f);
+                flepi2.get(23).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0.0f);
+                flepi2.get(24).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0.0f);
+                flepi2.get(19).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, .0f);
+                flepi2.get(25).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0f);
+                flepi2.get(26).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0.0f);
+                flepi2.get(27).rotateObject((float) Math.toRadians(-5f), 1.0f, 0.0f, 0.0f);
+
+                flepi2.get(18).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(22).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(23).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(24).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(19).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(25).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(26).translateObject(posisi.x, posisi.y, posisi.z);
+                flepi2.get(27).translateObject(posisi.x, posisi.y, posisi.z);
+            }
+            temp2 += count2;
+            System.out.println("temp" + temp2);
+            System.out.println("count" + count2);
+            if (temp2 > 27) {
+                count2 *= 0;
+                count3 *= -1;
+            }
+            if (count3 == -100)
+            {
+                if(!flepi2.get(30).isFlag()) {
+                    flepi2.get(30).setFlag();
+                    count3*=-1;
+                }
+
+            }
+//            else if (temp < -45) {
+//                count *= -1;
+//            }
+            if (count2 <= 28 && flepi2.get(30).isFlag()) {
+                if (temp2 > 0) {
+                    Vector3f posisi = flepi2.get(18).updateCenterPoint();
+                    flepi2.get(18).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(22).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(23).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(24).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(19).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(25).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(26).translateObject(-posisi.x, -posisi.y, -posisi.z);
+                    flepi2.get(27).translateObject(-posisi.x, -posisi.y, -posisi.z);
+
+                    flepi2.get(18).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, .0f);
+                    flepi2.get(22).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0f);
+                    flepi2.get(23).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0.0f);
+                    flepi2.get(24).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0.0f);
+                    flepi2.get(19).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, .0f);
+                    flepi2.get(25).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0f);
+                    flepi2.get(26).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0.0f);
+                    flepi2.get(27).rotateObject((float) Math.toRadians(5f), 1.0f, 0.0f, 0.0f);
+
+                    flepi2.get(18).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(22).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(23).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(24).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(19).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(25).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(26).translateObject(posisi.x, posisi.y, posisi.z);
+                    flepi2.get(27).translateObject(posisi.x, posisi.y, posisi.z);
+
+
+                }
+                temp2 -= 1;
+                if (temp2 > -75) {
+                    flepi2.get(30).translateObject(0f, -0.01f, 0.02f);
+                }
+
+            }
+            if (temp2 == -75 && flepi2.get(30).isFlag()){
+                temp2 = 0;
+                flepi2.get(30).setFlag();
+                System.out.println(flepi2.get(30).isFlag());
+            }
+//            flepi2.get(30).translateObject(0f,-0.01f,0.02f);
+//
+
+        }
 
         if(window.isKeyPressed(GLFW_KEY_Q))
         {
@@ -1275,6 +2001,7 @@ public class Main {
 
         if(window.isKeyPressed(GLFW_KEY_I))
         {
+
             camera.moveUp(0.01f);
 //            for (Object2d i: flappy)
 //            {

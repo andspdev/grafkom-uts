@@ -12,7 +12,7 @@ import static org.lwjgl.opengl.GL20.*;
 import static org.lwjgl.opengl.GL30.glBindVertexArray;
 import static org.lwjgl.opengl.GL30.glGenVertexArrays;
 
-public class Object2d extends ShaderProgram{
+public class Object2d extends ShaderProgram implements Cloneable{
 
     List<Vector3f> vertices;
     List<Vector3f>verticesColor;
@@ -24,6 +24,10 @@ public class Object2d extends ShaderProgram{
 
     int vbocolor;
     int vaocolor;
+
+    public boolean flag = true;
+
+
 
     UniformsMap uniformsMap;
     Matrix4f model;
@@ -46,6 +50,10 @@ public class Object2d extends ShaderProgram{
         model = new Matrix4f().identity();
         childObject =  new ArrayList<>();
     }
+    @Override
+    public Object2d clone() throws CloneNotSupportedException {
+        return (Object2d) super.clone();
+    }
 
     public Object2d(List<ShaderModuleData> shaderModuleDataList, List<Vector3f> vertices, List<Vector3f> verticesColor){
         super(shaderModuleDataList);
@@ -53,6 +61,15 @@ public class Object2d extends ShaderProgram{
         this.verticesColor = verticesColor;
         setupVAOVBOWithVerticesColor();
 
+    }
+
+
+    public void setFlag() {
+        this.flag = !this.flag;
+    }
+
+    public boolean isFlag() {
+        return flag;
     }
 
     public void setVertices(List<Vector3f> vertices) {
@@ -124,23 +141,24 @@ public class Object2d extends ShaderProgram{
     }
 
     public void draw(Camera camera, Projection projection){
-        drawSetup(camera, projection);
+        if (this.flag) {
+            drawSetup(camera, projection);
 
-        glLineWidth(2);
-        glPointSize(10);
+            glLineWidth(2);
+            glPointSize(10);
 
-        //GL_LINES
-        //GL_LINE_STRIP
-        //GL_LINE_LOOP
-        //GL_TRIANGLES
-        //GL_TRIANGLE_FAN
-        //GL_POINT
-        System.out.println(childObject.size());
+            //GL_LINES
+            //GL_LINE_STRIP
+            //GL_LINE_LOOP
+            //GL_TRIANGLES
+            //GL_TRIANGLE_FAN
+            //GL_POINT
+            System.out.println(childObject.size());
 
-    glDrawArrays(GL_POLYGON,0,vertices.size());
-        for (Object2d child:childObject){
-            System.out.println("Kepanggil");
-            child.draw(camera, projection);
+            glDrawArrays(GL_POLYGON,0,vertices.size());
+            for (Object2d child:childObject){
+                child.draw(camera, projection);
+            }
         }
     }
 
@@ -248,6 +266,13 @@ public class Object2d extends ShaderProgram{
             child.translateObject(offsetX,offsetY,offsetZ);
         }
 
+    }
+
+    public Vector3f updateCenterPoint(){
+        Vector3f centerTemp = new Vector3f();
+        model.transformPosition(0.0f, 0.0f, 0.0f, centerTemp);
+//        this.centerPoint = centerTemp;
+        return centerTemp;
     }
 
     public void rotateObject(Float degree, Float x, Float y, Float z){
