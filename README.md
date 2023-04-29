@@ -10,3 +10,6 @@ Nama Anggota:
 </ul>
 <br/>
 Link Youtube: 
+<br/>
+Link Laporan: 
+https://docs.google.com/document/d/1sXqOoghvtD0VZMr6ED7YSTIr_CkkDnjKgSJDLGdWCC4/edit
