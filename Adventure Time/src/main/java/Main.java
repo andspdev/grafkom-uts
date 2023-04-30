@@ -5,7 +5,6 @@ import org.joml.Vector3f;
 import org.joml.Vector4f;
 import org.lwjgl.glfw.GLFW;
 import org.lwjgl.opengl.GL;
-import java.awt.Robot;
 import java.util.*;
 
 import static org.lwjgl.glfw.GLFW.*;
